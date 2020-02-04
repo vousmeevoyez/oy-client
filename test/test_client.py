@@ -15,3 +15,10 @@ def test_build_client():
         print(error.message, error.original_exception)
     else:
         print(response)
+
+    try:
+        response = client.inquiry_account("014", "1111111111")
+    except ProviderError as error:
+        print(error.message, error.original_exception)
+    else:
+        print(response)

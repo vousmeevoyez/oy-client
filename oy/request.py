@@ -2,6 +2,7 @@
     Oy Request
     __________________
 """
+import json
 from oy.core.request import HTTPRequest
 
 
@@ -18,3 +19,9 @@ class OyRequest(HTTPRequest):
         self._header["Accept"] = "application/json"
         self._header["X-OY-Username"] = self.username
         self._header["X-Api-Key"] = self.api_key
+
+    def to_representation(self):
+        response = super().to_representation()
+        # convert data into json
+        response["data"] = json.dumps(response["data"])
+        return response
