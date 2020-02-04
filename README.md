@@ -8,11 +8,26 @@ https://api-docs.oyindonesia.com/
 	please create issue or contact me if you want to test it on python2
 
 ### Installing
+```
+	pip3 install oy-client
+```
 ### Quick Start
+```
+from oy import build_client
+
+# get balance
+oy_client = build_client("https://sandbox.oyindonesia.com/staging/partner", "username", "api-key")
+oy_client.get_balance()
+
+# inquiry account
+oy_client.inquiry_account("014", "1234561234")
+
+# disburse
+disburse("014", "123456789", 100000)
+```
 
 ## Built With
 
-* [Marshmallow](https://marshmallow.readthedocs.io/en/stable/) - Serialization Used
 * [Requests](https://requests.readthedocs.io/en/master/) - HTTP Library Used
 
 ## Contributing
