@@ -2,4 +2,4 @@ include README.md
 include LICENSE.md
 include requirements.txt
 recursive-include oy *.py *.txt
-recursive-exclude test *
+recursive-exclude test * test/core *

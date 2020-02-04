@@ -8,28 +8,7 @@ https://api-docs.oyindonesia.com/
 	please create issue or contact me if you want to test it on python2
 
 ### Installing
-```
-	pip install oy-client
-```
-
 ### Quick Start
-
-
-```
-from 
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 

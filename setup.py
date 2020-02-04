@@ -5,8 +5,7 @@ from setuptools import setup, find_packages
 
 def getRequires():
     deps = [
-        'requests>=2.22.0',
-        'marshmallow>=3.4.0'
+        'requests'
     ]
     return deps
 
@@ -16,14 +15,20 @@ readme = io.open(os.path.join(dir_path, 'README.md'), encoding='utf-8').read()
 
 setup(
     name='oy-client',
-    version='0.1',
+    version='0.1.11',
     author='Kelvin Desman',
     author_email='kelvindsmn@gmail.com',
     url='https://github.com/vousmeevoyez/oy-client',
     packages=find_packages(exclude=["temp*.py", "test"]),
     include_package_data=True,
-    license='MIT',
     description='Unofficial Oy Client library for Python',
     long_description=readme,
+    long_description_content_type='text/markdown',
     install_requires=getRequires(),
+    python_requires='>=3.6',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
 )

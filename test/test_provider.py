@@ -33,9 +33,10 @@ def test_inquiry_account_success(mock_remote_call, setup_request, setup_response
     )
 
     response = provider.inquiry_account("014", "1239812390")
-    assert response["name"]
-    assert response["account_no"]
-    assert response["bank_code"]
+    assert response["recipient_bank"]
+    assert response["recipient_account"]
+    assert response["recipient_name"]
+    assert response["timestamp"]
 
 
 @patch("oy.core.remote_call.RemoteCall")
@@ -63,12 +64,13 @@ def test_disburse(mock_remote_call, setup_request, setup_response):
     )
 
     response = provider.disburse("014", "1239812390", 125000)
-    assert response["trx_reference"]
-    assert response["bank_code"]
-    assert response["account_no"]
+    assert response["trx_id"]
+    assert response["partner_trx_id"]
+    assert response["recipient_bank"]
+    assert response["recipient_account"]
     assert response["amount"]
     # make sure amount is decimal
-    assert type(response["amount"]) == Decimal
+    assert type(response["amount"]) == int
 
 
 @patch("oy.core.remote_call.RemoteCall")
@@ -99,12 +101,12 @@ def test_disburse_status(mock_remote_call, setup_request, setup_response):
     )
 
     response = provider.disburse_status("1234-asde")
-    assert response["account_no"]
+    assert response["recipient_account"]
+    assert response["recipient_name"]
+    assert response["recipient_bank"]
     assert response["amount"]
-    assert response["bank_code"]
-    assert response["name"]
     assert response["trx_id"]
-    assert response["trx_reference"]
+    assert response["partner_trx_id"]
     assert response["timestamp"]
     assert response["created_date"]
     assert response["last_updated_date"]
@@ -156,7 +158,7 @@ def test_generate_va(mock_remote_call, setup_request, setup_response):
 
     response = provider.generate_va("002", "500000", "oy00000001")
     assert response["amount"] == 500000
-    assert response["va_no"] == "100536000000000001"
+    assert response["vaNumber"] == "100536000000000001"
 
 
 @patch("oy.core.remote_call.RemoteCall")

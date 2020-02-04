@@ -8,14 +8,6 @@ import uuid
 
 from oy.core.provider import BaseProvider
 from oy.urls import URLS
-from oy.serializers import (
-    InquiryAccountSchema,
-    DisburseSchema,
-    DisburseStatusSchema,
-    GetBalanceSchema,
-    GenerateVaSchema
-)
-
 
 class OyProvider(BaseProvider):
     """
@@ -35,53 +27,55 @@ class OyProvider(BaseProvider):
         if "payload" in kwargs:
             self.request_contract.payload = kwargs["payload"]
 
-    def inquiry_account(self, bank_code, account_no):
+    def inquiry_account(self, recipient_bank, recipient_account):
         """
             Bank Account Inquiry
             This API is mandatory to hit before remit API.
             Use this API to get beneficiary account details.
 
             Parameters:
-                bank_code : string
-                account_no: string
+                recipient_bank : string
+                recipient_account: string
 
             Returns:
-                bank_code: string
-                account_no: string
-                name: string
+                recipient_bank: string
+                recipient_account: string
+                recipient_name: string
+                timestamp: string
         """
         payload = {
             "api_name": "INQUIRY_ACCOUNT",
             "method": "POST",
             "payload": {
-                "recipient_bank": bank_code,
-                "recipient_account": account_no
+                "recipient_bank": recipient_bank,
+                "recipient_account": recipient_account
             }
         }
         response = self.execute(**payload)
-        # serialize response through serializer so if any change in response
-        # don't stop the flow
-        serialized_response = InquiryAccountSchema().load(response)
-        return serialized_response
+        # trim status code
+        return response
 
-    def disburse(self, bank_code, account_no, amount, note=None, trx_id=None):
+    def disburse(self, recipient_bank, recipient_account, amount, note=None,
+                 partner_trx_id=None):
         """
             Use this API to start disbursing money to a specific beneficiary account.
 
             Parameters:
-                bank_code : string
-                account_no: string
+                recipient_bank : string
+                recipient_account: string
                 amount: decimal
                 note: string (optional)
-                trx_id: string (optional)
+                partner_trx_id: string (optional)
 
             Returns:
-                bank_code: string
-                account_no: string
-                amount: decimal
-                trx_reference: string
+                recipient_bank: string
+                recipient_account: string
+                amount: int
+                trx_id: string
+                partner_trx_id: string
+                timestamp: string
         """
-        if trx_id is None:
+        if partner_trx_id is None:
             trx_id = str(uuid.uuid4())
 
         if note is None:
@@ -91,24 +85,23 @@ class OyProvider(BaseProvider):
             "api_name": "DISBURSE",
             "method": "POST",
             "payload": {
-                "recipient_bank": bank_code,
-                "recipient_account": account_no,
+                "recipient_bank": recipient_bank,
+                "recipient_account": recipient_account,
                 "amount": amount,
                 "note": note,
                 "partner_trx_id": trx_id,
             }
         }
         response = self.execute(**payload)
-        serialized_response = DisburseSchema().load(response)
-        return serialized_response
+        return response
 
-    def disburse_status(self, trx_reference):
+    def disburse_status(self, partner_trx_id):
         """
             To get status of a disbursement request, you can call this API.
             You may need to call this API few times until getting a final status (success / failed)
 
             Parameters:
-                trx_reference : string
+                partner_trx_id : string
 
             Returns:
                 bank_code: string
@@ -125,12 +118,11 @@ class OyProvider(BaseProvider):
             "api_name": "DISBURSE_STATUS",
             "method": "POST",
             "payload": {
-                "partner_trx_id": trx_reference
+                "partner_trx_id": partner_trx_id
             }
         }
         response = self.execute(**payload)
-        serialized_response = DisburseStatusSchema().load(response)
-        return serialized_response
+        return response
 
     def get_balance(self):
         """
@@ -144,31 +136,29 @@ class OyProvider(BaseProvider):
             "method": "GET",
         }
         response = self.execute(**payload)
-        serialized_response = GetBalanceSchema().load(response)
-        return serialized_response
+        return response
 
-    def generate_va(self, bank_code, amount, va_id=None):
+    def generate_va(self, bank_code, amount, partner_user_id=None):
         """
             Use this API to generate VA number
 
             Parameters:
                 bank_code : string
                 amount : string
-                va_id : string (optional)
+                partner_user_id : string (optional)
 
             Returns:
-                va_no:  string
+                vaNumber:  string
                 amount: decimal
         """
         payload = {
             "api_name": "GENERATE_VA",
             "method": "POST",
             "payload": {
-                "partner_user_id": va_id,
+                "partner_user_id": partner_user_id,
                 "bank_code": bank_code,
                 "amount": amount
             }
         }
         response = self.execute(**payload)
-        serialized_response = GenerateVaSchema().load(response)
-        return serialized_response
+        return response

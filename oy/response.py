@@ -30,7 +30,7 @@ class OyResponse(HTTPResponse):
 
         """
         status_code = response["status"]["code"]
-        if status_code != "000" and status_code != "101":
+        if status_code not in ["000", "101"]:
             raise ResponseError("STATUS_FAILED", original_exception=response["status"]["message"])
         return response
 
