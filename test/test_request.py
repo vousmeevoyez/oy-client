@@ -12,10 +12,7 @@ def test_to_representation():
         request["url"] == "https://sandbox.oyindonesia.com/staging/partner/api/inquiry"
     )
     assert request["method"] == "POST"
-    assert request["data"] == {
-        "recipient_bank": "014",
-        "recipient_account": "1239812390",
-    }
+    assert request["data"]
     # make sure header have username key content type and accept
     assert request["headers"]["Content-Type"]
     assert request["headers"]["Accept"]

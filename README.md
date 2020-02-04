@@ -4,7 +4,7 @@ Unofficial Oy Client using Python
 https://api-docs.oyindonesia.com/
 
 ### Prerequisites
-	These library only tested for python 3 >
+	These library only tested for python 3.7 but it should be compatible to other python version
 	please create issue or contact me if you want to test it on python2
 
 ### Installing
@@ -33,9 +33,8 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Marshmallow](https://marshmallow.readthedocs.io/en/stable/) - Serialization Used
+* [Requests](https://requests.readthedocs.io/en/master/) - HTTP Library Used
 
 ## Contributing
 
