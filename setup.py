@@ -26,8 +26,4 @@ setup(
     description='Unofficial Oy Client library for Python',
     long_description=readme,
     install_requires=getRequires(),
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: MIT License",
-    ],
 )
