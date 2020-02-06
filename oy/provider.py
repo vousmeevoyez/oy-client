@@ -56,9 +56,10 @@ class OyProvider(BaseProvider):
         return response
 
     def disburse(self, recipient_bank, recipient_account, amount, note=None,
-                 partner_trx_id=None):
+                 partner_trx_id=uuid.uuid4()):
         """
-            Use this API to start disbursing money to a specific beneficiary account.
+            Use this API to start disbursing money to a
+            specific beneficiary account.
 
             Parameters:
                 recipient_bank : string
@@ -75,11 +76,8 @@ class OyProvider(BaseProvider):
                 partner_trx_id: string
                 timestamp: string
         """
-        if partner_trx_id is None:
-            trx_id = str(uuid.uuid4())
-
         if note is None:
-            note = "Transfer {}".format(trx_id)
+            note = "Transfer {}".format(partner_trx_id)
 
         payload = {
             "api_name": "DISBURSE",
@@ -89,7 +87,7 @@ class OyProvider(BaseProvider):
                 "recipient_account": recipient_account,
                 "amount": amount,
                 "note": note,
-                "partner_trx_id": trx_id,
+                "partner_trx_id": partner_trx_id
             }
         }
         response = self.execute(**payload)
@@ -98,7 +96,8 @@ class OyProvider(BaseProvider):
     def disburse_status(self, partner_trx_id):
         """
             To get status of a disbursement request, you can call this API.
-            You may need to call this API few times until getting a final status (success / failed)
+            You may need to call this API few times
+            until getting a final status (success / failed)
 
             Parameters:
                 partner_trx_id : string

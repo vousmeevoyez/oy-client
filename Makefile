@@ -4,3 +4,6 @@ clean:
 
 publish-staging:
 	python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
+
+publish:
+	python3 -m twine upload dist/* --verbose
