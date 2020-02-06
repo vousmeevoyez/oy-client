@@ -56,7 +56,7 @@ class OyProvider(BaseProvider):
         return response
 
     def disburse(self, recipient_bank, recipient_account, amount, note=None,
-                 partner_trx_id=uuid.uuid4()):
+                 partner_trx_id=str(uuid.uuid4())):
         """
             Use this API to start disbursing money to a
             specific beneficiary account.
