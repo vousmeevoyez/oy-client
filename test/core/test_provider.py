@@ -11,6 +11,16 @@ from oy.core.exceptions import (
 from oy.exceptions import ProviderError
 
 
+def test_dict_to_url_query():
+    mock_request = Mock()
+    mock_response = Mock()
+    mock_remote_call = Mock()
+
+    provider = BaseProvider(mock_request, mock_response, mock_remote_call)
+    result = provider.dict_to_url_query({"offset": 0, "limit": 100})
+    assert result == "?offset=0&limit=100"
+
+
 def test_provider():
     mock_request = Mock()
     mock_response = Mock()
@@ -19,6 +29,46 @@ def test_provider():
     provider = BaseProvider(mock_request, mock_response, mock_remote_call)
     provider_payload = {
         "url": "https://sandbox.oyindonesia.com/staging/partner",
+        "method": "POST",
+        "payload": {"recipient_bank": "014", "recipient_account": "1239812390"},
+    }
+
+    mock_request_payload = {
+        "url": "https://sandbox.oyindonesia.com/staging/partner",
+        "method": "POST",
+        "data": {"recipient_bank": "014", "recipient_account": "1239812390"},
+    }
+
+    mock_request.to_representation.return_value = mock_request_payload
+
+    mock_response_payload = {
+        "status": {"code": "000", "message": "Success"},
+        "recipient_bank": "014",
+        "recipient_account": "1239812390",
+        "recipient_name": "John Doe",
+        "timestamp": "16-10-2019 09:55:31",
+    }
+
+    mock_response.to_representation.return_value = mock_response_payload
+    mock_remote_call.fetch.return_value = mock_response_payload
+
+    response = provider.execute(**provider_payload)
+    assert response["status"]
+    assert response["recipient_bank"]
+    assert response["recipient_name"]
+    assert response["timestamp"]
+
+
+def test_provider_with_query_params():
+    mock_request = Mock()
+    mock_response = Mock()
+    mock_remote_call = Mock()
+
+    provider = BaseProvider(mock_request, mock_response, mock_remote_call)
+    provider_payload = {
+        "url": "https://sandbox.oyindonesia.com/staging/partner/",
+        "url_path": "some-url-path",
+        "query_params": {"offset": 0, "limit": 100},
         "method": "POST",
         "payload": {"recipient_bank": "014", "recipient_account": "1239812390"},
     }

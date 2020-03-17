@@ -14,9 +14,6 @@ def build_client(base_url, username, api_key):
     response = OyResponse()
     remote_call = RemoteCall()
     client = OyProvider(
-        base_url=base_url,
-        request=request,
-        response=response,
-        remote_call=remote_call,
+        base_url=base_url, request=request, response=response, remote_call=remote_call
     )
     return client
