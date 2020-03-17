@@ -21,7 +21,11 @@ class OyProvider(BaseProvider):
         return self.base_url + URLS[api_name]
 
     def prepare_request(self, **kwargs):
-        self.request_contract.url = self._api_name_to_full_url(kwargs["api_name"])
+        # url
+        url = self._api_name_to_full_url(kwargs["api_name"])
+        kwargs["url"] = url
+
+        self.request_contract.url = self.build_url(**kwargs)
         self.request_contract.method = kwargs["method"]
         if "payload" in kwargs:
             self.request_contract.payload = kwargs["payload"]
