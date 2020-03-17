@@ -3,10 +3,7 @@
     __________________
 """
 from oy.core.response import HTTPResponse
-from oy.core.exceptions import (
-    ResponseError,
-    DuplicateRequestError
-)
+from oy.core.exceptions import ResponseError, DuplicateRequestError
 
 
 class OyResponse(HTTPResponse):
@@ -31,7 +28,9 @@ class OyResponse(HTTPResponse):
         """
         status_code = response["status"]["code"]
         if status_code not in ["000", "101"]:
-            raise ResponseError("STATUS_FAILED", original_exception=response["status"]["message"])
+            raise ResponseError(
+                "STATUS_FAILED", original_exception=response["status"]["message"]
+            )
         return response
 
     @staticmethod

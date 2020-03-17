@@ -3,10 +3,7 @@ from decimal import Decimal
 import pytest
 
 from oy.provider import OyProvider
-from oy.core.exceptions import (
-    FetchError,
-    StatusCodeError
-)
+from oy.core.exceptions import FetchError, StatusCodeError
 from oy.exceptions import ProviderError
 
 
@@ -142,9 +139,16 @@ def test_generate_va(mock_remote_call, setup_request, setup_response):
     # respresantion
     mock_response = setup_response(
         response={
+            "id": "12345b1-23be-45670-a123-5ca678f12b3e",
             "status": {"code": "000", "message": "Success"},
-            "amount": 500000,
-            "vaNumber": "100536000000000001",
+            "amount": 10000,
+            "va_number": "123456789182827272",
+            "bank_code": "002",
+            "is_open": False,
+            "is_single_use": False,
+            "expiration_time": 1582783668175,
+            "va_status": "WAITING_PAYMENT",
+            "username_display": "va name",
         }
     )
     mock_remote_call.fetch.return_value = mock_response.to_representation()
@@ -157,8 +161,243 @@ def test_generate_va(mock_remote_call, setup_request, setup_response):
     )
 
     response = provider.generate_va("002", "500000", "oy00000001")
-    assert response["amount"] == 500000
-    assert response["vaNumber"] == "100536000000000001"
+    assert response["amount"] == 10000
+    assert response["va_number"] == "123456789182827272"
+    assert response["bank_code"] == "002"
+    assert response["is_open"] is False
+    assert response["is_single_use"] is False
+    assert response["expiration_time"] == 1582783668175
+    assert response["va_status"] == "WAITING_PAYMENT"
+    assert response["username_display"] == "va name"
+
+
+@patch("oy.core.remote_call.RemoteCall")
+def test_get_va(mock_remote_call, setup_request, setup_response):
+    # mock fetch method on remote call as the same one as mock response
+    # respresantion
+    mock_response = setup_response(
+        response={
+            "id": "12345b1-23be-45670-a123-5ca678f12b3e",
+            "status": {"code": "000", "message": "Success"},
+            "amount": 10000,
+            "va_number": "123456789182827272",
+            "bank_code": "002",
+            "is_open": False,
+            "is_single_use": False,
+            "expiration_time": 1582783668175,
+            "va_status": "WAITING_PAYMENT",
+            "username_display": "va name",
+            "amount_detected": 0,
+            "partner_user_id": "123456",
+        }
+    )
+    mock_remote_call.fetch.return_value = mock_response.to_representation()
+
+    provider = OyProvider(
+        request=setup_request,
+        response=setup_response,
+        remote_call=mock_remote_call,
+        base_url="https://sandbox.oyindonesia.com/staging/partner",
+    )
+
+    response = provider.get_va_info("12345b1-23be-45670-a123-5ca678f12b3e")
+    assert response["amount"] == 10000
+    assert response["va_number"] == "123456789182827272"
+    assert response["bank_code"] == "002"
+    assert response["is_open"] is False
+    assert response["is_single_use"] is False
+    assert response["expiration_time"] == 1582783668175
+    assert response["va_status"] == "WAITING_PAYMENT"
+    assert response["username_display"] == "va name"
+    assert response["amount_detected"] == 0
+    assert response["partner_user_id"] == "123456"
+
+
+@patch("oy.core.remote_call.RemoteCall")
+def test_update_va(mock_remote_call, setup_request, setup_response):
+    # mock fetch method on remote call as the same one as mock response
+    # respresantion
+    mock_response = setup_response(
+        response={
+            "id": "1414255-12121-21212121-212121",
+            "status": {"code": "000", "message": "Success"},
+            "amount": 50000,
+            "va_number": "1001234000000000001",
+            "bank_code": "002",
+            "is_open": True,
+            "is_single_use": False,
+            "expiration_time": 1582802205412,
+            "va_status": "WAITING_PAYMENT",
+            "username_display": "vaname",
+            "partner_user_id": "12345677",
+        }
+    )
+    mock_remote_call.fetch.return_value = mock_response.to_representation()
+
+    provider = OyProvider(
+        request=setup_request,
+        response=setup_response,
+        remote_call=mock_remote_call,
+        base_url="https://sandbox.oyindonesia.com/staging/partner",
+    )
+
+    response = provider.update_va(
+        "1414255-12121-21212121-212121", 50000, True, False, 60, False
+    )
+    assert response["amount"] == 50000
+    assert response["va_number"] == "1001234000000000001"
+    assert response["bank_code"] == "002"
+    assert response["is_open"] is True
+    assert response["is_single_use"] is False
+    assert response["expiration_time"] == 1582802205412
+    assert response["va_status"] == "WAITING_PAYMENT"
+    assert response["username_display"] == "vaname"
+    assert response["partner_user_id"] == "12345677"
+
+
+@patch("oy.core.remote_call.RemoteCall")
+def test_get_list_of_va(mock_remote_call, setup_request, setup_response):
+    # mock fetch method on remote call as the same one as mock response
+    # respresantion
+    mock_response = setup_response(
+        response={
+            "total": 2,
+            "data": [
+                {
+                    "id": "9a660428-3373-436b-b929-ef69698dd26f",
+                    "amount": 12000.0000,
+                    "va_number": "100536000000000006",
+                    "bank_code": "002",
+                    "is_open": True,
+                    "is_single_use": False,
+                    "expiration_time": 1582791896416,
+                    "va_status": "EXPIRED",
+                    "username_display": "username",
+                    "amount_detected": 400000,
+                    "partner_user_id": "12345",
+                },
+                {
+                    "id": "de51383f-1557-409c-8542-dcb74ca76375",
+                    "amount": 12000.0000,
+                    "va_number": "100536000000000005",
+                    "bank_code": "002",
+                    "is_open": True,
+                    "is_single_use": False,
+                    "expiration_time": 1582790250609,
+                    "va_status": "EXPIRED",
+                    "username_display": "username",
+                    "amount_detected": 500000,
+                    "partner_user_id": "54321",
+                },
+            ],
+            "status": {"code": "000", "message": "Success"},
+        }
+    )
+    mock_remote_call.fetch.return_value = mock_response.to_representation()
+
+    provider = OyProvider(
+        request=setup_request,
+        response=setup_response,
+        remote_call=mock_remote_call,
+        base_url="https://sandbox.oyindonesia.com/staging/partner",
+    )
+
+    response = provider.get_list_of_va()
+    assert response["total"] == 2
+    assert len(response["data"]) == 2
+
+
+@patch("oy.core.remote_call.RemoteCall")
+def test_get_list_of_va_transactions(mock_remote_call, setup_request, setup_response):
+    # mock fetch method on remote call as the same one as mock response
+    # respresantion
+    mock_response = setup_response(
+        response={
+            "total": 2,
+            "data": [
+                {
+                    "id": "9a660428-3373-436b-b929-ef69698dd26f",
+                    "amount": 12000.0000,
+                    "va_number": "100536000000000006",
+                    "bank_code": "002",
+                    "is_open": True,
+                    "is_single_use": False,
+                    "expiration_time": 1582791896416,
+                    "va_status": "EXPIRED",
+                    "username_display": "username",
+                    "amount_detected": 400000,
+                    "partner_user_id": "12345",
+                },
+                {
+                    "id": "de51383f-1557-409c-8542-dcb74ca76375",
+                    "amount": 12000.0000,
+                    "va_number": "100536000000000005",
+                    "bank_code": "002",
+                    "is_open": True,
+                    "is_single_use": False,
+                    "expiration_time": 1582790250609,
+                    "va_status": "EXPIRED",
+                    "username_display": "username",
+                    "amount_detected": 500000,
+                    "partner_user_id": "54321",
+                },
+            ],
+            "status": {"code": "000", "message": "Success"},
+        }
+    )
+    mock_remote_call.fetch.return_value = mock_response.to_representation()
+
+    provider = OyProvider(
+        request=setup_request,
+        response=setup_response,
+        remote_call=mock_remote_call,
+        base_url="https://sandbox.oyindonesia.com/staging/partner",
+    )
+
+    response = provider.get_list_of_va()
+    assert response["total"] == 2
+    assert len(response["data"]) == 2
+
+
+@patch("oy.core.remote_call.RemoteCall")
+def test_get_list_of_va_transactions(mock_remote_call, setup_request, setup_response):
+    # mock fetch method on remote call as the same one as mock response
+    # respresantion
+    mock_response = setup_response(
+response = {
+    "id": "12345676788898",
+    "status": {
+        "code": "000",
+        "message": "Success"
+    },
+    "data": [
+        {
+            "id": "d9c2963f-be14-4558-9380-5ba1db8ed156",
+            "created": "2020-02-27 07:48:01",
+            "name": "Static VA by username",
+            "amount": 10000,
+            "create_by": "Static VA by username",
+            "last_update_by": "Static VA by username",
+            "last_updated": 1582789681439,
+            "admin_fee": 1000,
+            "va_number": "123456000000000001"
+        }
+    ],
+    "number_of_transaction": 1
+}
+    )
+    mock_remote_call.fetch.return_value = mock_response.to_representation()
+
+    provider = OyProvider(
+        request=setup_request,
+        response=setup_response,
+        remote_call=mock_remote_call,
+        base_url="https://sandbox.oyindonesia.com/staging/partner",
+    )
+
+    response = provider.get_list_of_va_transactions("12345676788898")
+    assert response["number_of_transaction"] == 1
+    assert len(response["data"]) == 1
 
 
 @patch("oy.core.remote_call.RemoteCall")

@@ -4,9 +4,7 @@ from oy.exceptions import ProviderError
 
 def test_build_client():
     client = build_client(
-        "https://sandbox.oyindonesia.com/staging/partner",
-        "myuser",
-        "987654"
+        "https://sandbox.oyindonesia.com/staging/partner", "myuser", "987654"
     )
 
     try:

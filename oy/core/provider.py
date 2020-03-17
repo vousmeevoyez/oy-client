@@ -9,7 +9,7 @@ from oy.core.exceptions import (
     StatusCodeError,
     InvalidResponseError,
     ResponseError,
-    FetchError
+    FetchError,
 )
 from oy.exceptions import ProviderError
 
@@ -42,7 +42,26 @@ class BaseProvider:
     def response_contract(self, contract):
         self._response_contract = contract
 
-    def build_url(self, requested_url):
+    @staticmethod
+    def dict_to_url_query(params):
+        """ convert any dictionary into url query parameter """
+        # pattern ?key=value
+        query = ""
+        pattern = "{}={}"
+        counter = 1
+        for key, value in params.items():
+            query = query + pattern.format(key, value)
+            if counter == 1:
+                query = "?" + query
+
+            if counter != len(params):
+                query = query + "&"
+            # end if
+            counter += 1
+        # end for
+        return query
+
+    def build_url(self, url, url_path=None, query_params=None, **ignore):
         """
             provider method to build right url to be requested
             if base_url + port is provided we generate:
@@ -51,17 +70,25 @@ class BaseProvider:
             if !base_url + !port is provided we generate:
                 requested_url
         """
-        url = requested_url
+        final_url = url
         if self.base_url is not None:
-            url = self.base_url + requested_url
+            url = self.base_url + url
             if self.port is not None:
                 # if we connect to specific port we need to add it as path to
-                url = self.base_url + ":" + self.port + requested_url
-        return url
+                url = self.base_url + ":" + self.port + url
+
+        # add url path if available
+        if url_path is not None:
+            final_url += url_path
+
+        # add query params if available
+        if query_params is not None:
+            final_url += self.dict_to_url_query(query_params)
+        return final_url
 
     def prepare_request(self, **kwargs):
         """ prepare parameter and extract it into right request """
-        self.request_contract.url = self.build_url(kwargs["url"])
+        self.request_contract.url = self.build_url(**kwargs)
         self.request_contract.method = kwargs["method"]
         self.request_contract.payload = kwargs["payload"]
 

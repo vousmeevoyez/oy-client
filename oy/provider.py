@@ -9,6 +9,7 @@ import uuid
 from oy.core.provider import BaseProvider
 from oy.urls import URLS
 
+
 class OyProvider(BaseProvider):
     """
         Oy Provider
@@ -20,9 +21,7 @@ class OyProvider(BaseProvider):
         return self.base_url + URLS[api_name]
 
     def prepare_request(self, **kwargs):
-        self.request_contract.url = self._api_name_to_full_url(
-            kwargs["api_name"]
-        )
+        self.request_contract.url = self._api_name_to_full_url(kwargs["api_name"])
         self.request_contract.method = kwargs["method"]
         if "payload" in kwargs:
             self.request_contract.payload = kwargs["payload"]
@@ -48,15 +47,21 @@ class OyProvider(BaseProvider):
             "method": "POST",
             "payload": {
                 "recipient_bank": recipient_bank,
-                "recipient_account": recipient_account
-            }
+                "recipient_account": recipient_account,
+            },
         }
         response = self.execute(**payload)
         # trim status code
         return response
 
-    def disburse(self, recipient_bank, recipient_account, amount, note=None,
-                 partner_trx_id=str(uuid.uuid4())):
+    def disburse(
+        self,
+        recipient_bank,
+        recipient_account,
+        amount,
+        note=None,
+        partner_trx_id=str(uuid.uuid4()),
+    ):
         """
             Use this API to start disbursing money to a
             specific beneficiary account.
@@ -87,8 +92,8 @@ class OyProvider(BaseProvider):
                 "recipient_account": recipient_account,
                 "amount": amount,
                 "note": note,
-                "partner_trx_id": partner_trx_id
-            }
+                "partner_trx_id": partner_trx_id,
+            },
         }
         response = self.execute(**payload)
         return response
@@ -116,9 +121,7 @@ class OyProvider(BaseProvider):
         payload = {
             "api_name": "DISBURSE_STATUS",
             "method": "POST",
-            "payload": {
-                "partner_trx_id": partner_trx_id
-            }
+            "payload": {"partner_trx_id": partner_trx_id},
         }
         response = self.execute(**payload)
         return response
@@ -130,25 +133,85 @@ class OyProvider(BaseProvider):
             Returns:
                 balance: decimal
         """
-        payload = {
-            "api_name": "GET_BALANCE",
-            "method": "GET",
-        }
+        payload = {"api_name": "GET_BALANCE", "method": "GET"}
         response = self.execute(**payload)
         return response
 
-    def generate_va(self, bank_code, amount, partner_user_id=None):
+    def generate_va(
+        self,
+        bank_code,
+        amount,
+        partner_user_id=None,
+        is_open=True,
+        is_single_use=False,
+        expiration_time=None,
+        is_lifetime=False,
+        username_display=None,
+    ):
         """
             Use this API to generate VA number
 
             Parameters:
                 bank_code : string
+                    Bank code which the VA number will be generated
+
                 amount : string
+                    Amount your user must paid to complete the transaction
+
                 partner_user_id : string (optional)
+                    Your unique ID for specific user
+
+                is_open: Boolean (optional)
+                    If set true means VA number can accept any amount,
+                    field amount can be optional,
+                    if set false means VA number only accept the specified amount in the
+                    field amount. When you set is_open to false, you must specify amount field.
+
+                is_single_use: Boolean (optional)
+                    True means that this VA should be closed once there is
+                    a successful payment that is being made to this VA.
+
+                expiration_time: int (optional)
+                    Expiration time of the VA in minutes, if empty VA will
+                    be expired in 24 hour
+
+                is_lifetime: Boolean(optional)
+                    If it is set to FALSE (default) then VA will expire based on the expiration time.
+                    Otherwise, it will remain active.
+
+                username_display: String (optional)
+                    VA Name, default is using username
 
             Returns:
-                vaNumber:  string
+                id: string
+                    Unique VA ID
+
+                va_number:  string
+                    Generated VA number
+
                 amount: decimal
+                    Amount of VA transaction
+
+                bank_code: string
+                    Bank code for VA, see VA Bank Code
+
+                is_open: boolean
+                    True means VA number can accept any amount, False means VA number only accept the
+                    specified amount in the field amount
+
+                is_single_use: boolean
+                    True means that this VA should be closed/complete once there is a successful
+                    payment that is being made to this VA.
+
+                expiration_time: int
+                    Expiration time of VA on Unix timestamp, -1 means no expiration time.
+
+                va_status: string
+                    Status of VA, see VA Status
+
+                username_display: string
+                    VA Name, default is using username
+
         """
         payload = {
             "api_name": "GENERATE_VA",
@@ -156,7 +219,205 @@ class OyProvider(BaseProvider):
             "payload": {
                 "partner_user_id": partner_user_id,
                 "bank_code": bank_code,
-                "amount": amount
+                "amount": amount,
+                "is_open": is_open,
+                "is_single_use": is_single_use,
+                "expiration_time": expiration_time,
+                "is_lifetime": is_lifetime,
+                "username_display": username_display,
+            },
+        }
+        response = self.execute(**payload)
+        return response
+
+    def get_va_info(self, va_id):
+        """
+            Get VA info using Unique VA id.
+
+            Parameters:
+                va_id : string
+                    Unique VA ID
+
+            Returns:
+                id: string
+                    Unique VA ID
+
+                va_number:  string
+                    Generated VA number
+
+                amount: decimal
+                    Amount of VA transaction
+
+                bank_code: string
+                    Bank code for VA, see VA Bank Code
+
+                is_open: boolean
+                    True means VA number can accept any amount, False means VA number only accept the
+                    specified amount in the field amount
+
+                is_single_use: boolean
+                    True means that this VA should be closed/complete once there is a successful
+                    payment that is being made to this VA.
+
+                expiration_time: int
+                    Expiration time of VA on Unix timestamp, -1 means no expiration time.
+
+                va_status: string
+                    Status of VA, see VA Status
+
+                username_display: string
+                    VA Name, default is using username
+
+                partner_user_id: string
+                    partner user id
+
+        """
+        payload = {"api_name": "VA_INFO", "method": "GET", "url_path": va_id}
+        response = self.execute(**payload)
+        return response
+
+    def update_va(
+        self, va_id, amount, is_open, is_single_use, expiration_time, is_lifetime
+    ):
+        """
+            Update VA using unique VA id.
+
+            Parameters:
+                va_id : string
+                    unique va id
+
+                amount : string
+                    Amount your user must paid to complete the transaction
+
+                is_open: Boolean (optional)
+                    If set true means VA number can accept any amount,
+                    field amount can be optional,
+                    if set false means VA number only accept the specified amount in the
+                    field amount. When you set is_open to false, you must specify amount field.
+
+                is_single_use: Boolean (optional)
+                    True means that this VA should be closed once there is
+                    a successful payment that is being made to this VA.
+
+                expiration_time: int (optional)
+                    Expiration time of the VA in minutes, if empty VA will
+                    be expired in 24 hour
+
+                is_lifetime: Boolean(optional)
+                    If it is set to FALSE (default) then VA will expire based on the expiration time.
+                    Otherwise, it will remain active.
+
+            Returns:
+                id: string
+                    Unique VA ID
+
+                va_number:  string
+                    Generated VA number
+
+                amount: decimal
+                    Amount of VA transaction
+
+                bank_code: string
+                    Bank code for VA, see VA Bank Code
+
+                is_open: boolean
+                    True means VA number can accept any amount, False means VA number only accept the
+                    specified amount in the field amount
+
+                is_single_use: boolean
+                    True means that this VA should be closed/complete once there is a successful
+                    payment that is being made to this VA.
+
+                expiration_time: int
+                    Expiration time of VA on Unix timestamp, -1 means no expiration time.
+
+                va_status: string
+                    Status of VA, see VA Status
+
+                username_display: string
+                    VA Name, default is using username
+
+                username_display: string
+                    VA Name, default is using username
+
+                partner_user_id: string
+                    partner user id
+
+        """
+        payload = {
+            "api_name": "VA_INFO",
+            "method": "PUT",
+            "url_path": va_id,
+            "payload": {
+                "amount": amount,
+                "is_open": is_open,
+                "is_single_use": is_single_use,
+                "expiration_time": expiration_time,
+                "is_lifetime": is_lifetime,
+            },
+        }
+        response = self.execute(**payload)
+        return response
+
+    def get_list_of_va(self, offset=0, limit=10):
+        """
+            Get list of created VA
+
+            Parameters:
+                offset : int
+                    start offset, default is 0, if empty will used default value
+
+                limit : int
+                    max item to fetch, default is 10, if empty will used default value
+
+            Returns:
+                total: int
+                    total of records
+
+                data:  array
+                    list of virtual account
+        """
+        payload = {
+            "api_name": "VA_INFO",
+            "method": "GET",
+            "query_params": {
+                "offset": offset,
+                "limit": limit
+            }
+        }
+        response = self.execute(**payload)
+        return response
+
+    def get_list_of_va_transactions(self, va_id, offset=0, limit=10):
+        """
+            Get list of incoming transaction for specific va number.
+
+            Parameters:
+                va_id: string
+                    Unique VA ID, you can get this once you success created VA
+
+                offset : int
+                    start offset, default is 0, if empty will used default value
+
+                limit : int
+                    max item to fetch, default is 10, if empty will used default value
+
+            Returns:
+                id: string
+
+                data:  array
+                    list of virtual account
+
+                number_of_transaction: int
+                    no of transaction
+        """
+        payload = {
+            "api_name": "VA_TRANSACTIONS",
+            "method": "GET",
+            "url_path": va_id,
+            "query_params": {
+                "offset": offset,
+                "limit": limit
             }
         }
         response = self.execute(**payload)
