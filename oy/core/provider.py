@@ -90,7 +90,9 @@ class BaseProvider:
         """ prepare parameter and extract it into right request """
         self.request_contract.url = self.build_url(**kwargs)
         self.request_contract.method = kwargs["method"]
-        self.request_contract.payload = kwargs["payload"]
+        # access payload only when its available
+        if "payload" in kwargs:
+            self.request_contract.payload = kwargs["payload"]
 
     def call(self):
         """ wrapper function to encapsulate request & response contract!"""

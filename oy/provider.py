@@ -24,11 +24,7 @@ class OyProvider(BaseProvider):
         # url
         url = self._api_name_to_full_url(kwargs["api_name"])
         kwargs["url"] = url
-
-        self.request_contract.url = self.build_url(**kwargs)
-        self.request_contract.method = kwargs["method"]
-        if "payload" in kwargs:
-            self.request_contract.payload = kwargs["payload"]
+        super().prepare_request(**kwargs)
 
     def inquiry_account(self, recipient_bank, recipient_account):
         """
@@ -281,7 +277,8 @@ class OyProvider(BaseProvider):
         return response
 
     def update_va(
-        self, va_id, amount, is_open, is_single_use, expiration_time, is_lifetime
+        self, va_id, amount, is_open, is_single_use, expiration_time="",
+        is_lifetime=False
     ):
         """
             Update VA using unique VA id.
