@@ -272,7 +272,11 @@ class OyProvider(BaseProvider):
                     partner user id
 
         """
-        payload = {"api_name": "VA_INFO", "method": "GET", "url_path": va_id}
+        payload = {
+            "api_name": "VA_INFO",
+            "method": "GET",
+            "url_path": "/" + va_id
+        }
         response = self.execute(**payload)
         return response
 
@@ -348,7 +352,7 @@ class OyProvider(BaseProvider):
         payload = {
             "api_name": "VA_INFO",
             "method": "PUT",
-            "url_path": va_id,
+            "url_path": "/" + va_id,
             "payload": {
                 "amount": amount,
                 "is_open": is_open,
