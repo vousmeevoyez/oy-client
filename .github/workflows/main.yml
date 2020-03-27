@@ -17,13 +17,13 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2
+      uses: actions/checkout@master
       with:
         # so it can fetch current tagged version
         fetch-depth: '0'
 
     - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@master
       with:
         python-version: ${{matrix.python-version}}
 
@@ -49,3 +49,8 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
