@@ -29,8 +29,6 @@ jobs:
 
     - name: Install CI Dependencies
       run: |
-        apt-get update
-        apt-get install make
         python -m pip install --upgrade pip
         pip install -r requirements.ci.txt
 
