@@ -7,3 +7,15 @@ publish-staging:
 
 publish:
 	python3 -m twine upload dist/* --verbose
+
+check-cc:
+	radon cc oy --total-average -s 
+
+check-mi:
+	radon mi oy -s
+
+check-raw:
+	radon raw oy -s
+
+check-hal:
+	radon hal oy -f

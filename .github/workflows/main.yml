@@ -12,31 +12,40 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        # for now we just set it into 3.7
+        python-version: [3.7]
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
+      with:
+        # so it can fetch current tagged version
+        fetch-depth: '0'
 
     - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@master
+      uses: actions/setup-python@v2
       with:
         python-version: ${{matrix.python-version}}
 
-    - name: Install Dependencies
+    - name: Install CI Dependencies
       run: |
+        apt-get update
+        apt-get install make
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements.ci.txt
 
-    - name: Lint with flake8
+    - name: Static Checking
       run: |
-        pip install flake8
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --max-complexity=10
+
+    - name: Static Analysis
+      run: |
+        make check-cc
+        make check-mi
+        make check-raw
+        make check-hal
 
     - name: Test with pytest
       run: |
-        pip install pytest
         pytest
