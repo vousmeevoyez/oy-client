@@ -44,7 +44,7 @@ jobs:
         make check-raw
         make check-hal
 
-    - name: Test with pytest
+    - name: Unit Testing
       run: |
         pytest
 
