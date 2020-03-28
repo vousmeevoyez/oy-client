@@ -1,6 +1,5 @@
 # Oy Client 
-[![Github Action](https://github.com/vousmeevoyez/actions/oy-client/workflows/main.yml/badge.svg)]()
-[![Travis Badge](https://travis-ci.org/sendgrid/sendgrid-python.svg?branch=master)](https://travis-ci.org/sendgrid/sendgrid-python)
+[![](https://github.com/vousmeevoyez/actions/oy-client/workflows/main.yml/badge.svg)]()
 [![codecov](https://img.shields.io/codecov/c/github/sendgrid/sendgrid-python/master.svg?style=flat-square&label=Codecov+Coverage)](https://codecov.io/gh/sendgrid/sendgrid-python)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 
