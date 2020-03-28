@@ -1,4 +1,4 @@
-name: Python Package
+name: Python Pipeline
 
 on:
   # we want to trigger ci when someone push to master and create a pr
@@ -44,9 +44,18 @@ jobs:
         make check-raw
         make check-hal
 
-    - name: Unit Testing
+    - name: Unit Testing + Coverage
       run: |
-        pytest
+        make check-coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
 
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@master

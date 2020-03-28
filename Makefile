@@ -8,6 +8,9 @@ publish-staging:
 publish:
 	python3 -m twine upload dist/* --verbose
 
+check-coverage:
+	pytest --cov=./ --cov-report=xml
+
 check-cc:
 	radon cc oy --total-average -s 
 
