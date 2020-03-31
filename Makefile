@@ -5,6 +5,9 @@ clean:
 publish-staging:
 	python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
 
+build:
+	python setup.py sdist bdist_wheel
+
 publish:
 	python -m twine upload dist/* --verbose
 
