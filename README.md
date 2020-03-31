@@ -1,4 +1,8 @@
 # Oy Client 
+[![Build Status](https://github.com/vousmeevoyez/oy-client/workflows/Python%20Pipeline/badge.svg)](https://github.com/vousmeevoyez/oy-client/workflows/Python%20Pipeline/badge.svg)
+[![codecov](https://codecov.io/gh/vousmeevoyez/oy-client/branch/master/graph/badge.svg)](https://codecov.io/gh/vousmeevoyez/oy-client)
+[![Stable Version](https://img.shields.io/github/v/tag/vousmeevoyez/oy-client)](https://img.shields.io/github/v/tag/vousmeevoyez/oy-client)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 
 Unofficial Oy Client using Python 
 https://api-docs.oyindonesia.com/
