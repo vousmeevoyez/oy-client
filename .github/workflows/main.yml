@@ -51,7 +51,6 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
@@ -60,4 +59,12 @@ jobs:
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@master
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+    - name: Build and Publish to PYPI
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_TEST_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_TEST_PASSWORD }}
+      run: |
+        ./build.sh
+        make publish-staging
