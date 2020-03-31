@@ -3,10 +3,12 @@ clean:
 	rm -rf build dist oy_client.egg-info
 
 publish-staging:
-	python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
+	python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
 
 publish:
-	python3 -m twine upload dist/* --verbose
+	python -m twine upload dist/* --verbose
+build:
+	python setup.py sdist bdist_wheel
 
 check-coverage:
 	pytest --cov=./ --cov-report=xml
