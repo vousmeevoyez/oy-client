@@ -62,7 +62,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
-    - name: Build Package distribution 📦
+    - name: Build Package distribution
       run: |
         make build
 
