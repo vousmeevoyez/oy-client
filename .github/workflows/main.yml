@@ -66,5 +66,5 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_TEST_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_TEST_PASSWORD }}
       run: |
-        make build
+        python setup.py sdist bdist_wheel
         make publish-staging

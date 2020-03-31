@@ -7,8 +7,6 @@ publish-staging:
 
 publish:
 	python -m twine upload dist/* --verbose
-build:
-	python setup.py sdist bdist_wheel
 
 check-coverage:
 	pytest --cov=./ --cov-report=xml
